@@ -65,7 +65,7 @@ active proctype Writer() {
         ::  else -> break;
         od
 
-        printf("Writer: %d, %d\n", e[0],e[1]);
+        // printf("Writer: %d, %d\n", e[0],e[1]);
         
         // In our implementation, we declare the start of a write to happen at the start of an access to shared memory.
         // In this case, we access p2 first.
@@ -105,8 +105,8 @@ active[R] proctype Reader() {
 
     int i;
     do 
-    ::  
-en:     skip;   // Label for eventual entry.
+    ::  skip;
+en:     skip;   // Label for the eventual completion LTL.
         // Reset the result to all 0's.
         for (i : 0..(B-1)) {
             v[i] = 0;
