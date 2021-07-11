@@ -1,5 +1,9 @@
-// attempted to verify no deadlock - max depth reached
-// attempted to verify eventaul completion of reads - max depth reached
+// counter.pml
+// Authors: Michael Cunanan (z5204816), Kenvin Yu (z5207857)
+
+// Results:
+//  Attempted to verify no deadlock: max depth reached
+//  Attempted to verify eventaul completion of reads: max depth reached
 
 // Terminology:
 //  Carry-over: When adding 1 to the current digit causes this digit to be set to 0, and to incrememnt the next byte.
@@ -7,10 +11,11 @@
 
 #define B 2
 #define R 2
-#define MAX 5
+#define MAX 5 // Normally the MAX value for a byte is 255, but we artificially lower it for verficiation 
 
 //  Two copies of our counter. At the end of every 'write', these will be equal.
 //  Counters have the most signficant byte on the left (and least significant on the right)
+//  (Left means lowest index)
 byte c[B];
 byte d[B];
 
@@ -20,7 +25,7 @@ bit p2 = 0;
 
 //  Ghost variables which are only used for verification purposes.
 //  If we remove all code involving ghost variables, we end up with a normal solution.
-//  Most are arrays at they are meant to reflect what each reader sees.
+//  Most are arrays and they are meant to reflect what each reader sees.
 byte    ghost_C[B*R];
 byte    ghost_D[B*R];
 byte    ghost_V[B*R];
@@ -35,6 +40,7 @@ active proctype Writer() {
     byte e[B];  // Private temporary buffer to write/read from.
     int i;      // Counter variable.
     byte q;     // Private temporary byte to read in parity bits.
+    
     do
     ::
         ghost_will_signal = false;  // Indicate whether or not to signal overflow for later.
@@ -55,7 +61,7 @@ active proctype Writer() {
                         ghost_will_signal = true;   // Indicate that we should signal overflow.
                     }
                 ::  else -> skip;
-                fi
+                fi;
                 e[i] = 0;
             ::  else ->
                 e[i]++; // Add 1 to current digit
@@ -63,7 +69,7 @@ active proctype Writer() {
             fi
             i--;
         ::  else -> break;
-        od
+        od;
 
         // printf("Writer: %d, %d\n", e[0],e[1]);
         
@@ -77,7 +83,7 @@ active proctype Writer() {
                     ghost_overflow[i] = true;
                 }
             ::  else -> skip;
-            fi
+            fi;
             p2 = q;
         }
 
@@ -104,9 +110,11 @@ active[R] proctype Reader() {
     bit q2;     // Private variable to read in parity bit p2.
 
     int i;
+
     do 
-    ::  skip;
-en:     skip;   // Label for the eventual completion LTL.
+    ::  skip;   
+en:     skip;   // Label for eventual entry.
+
         // Reset the result to all 0's.
         for (i : 0..(B-1)) {
             v[i] = 0;
@@ -137,7 +145,7 @@ en:     skip;   // Label for the eventual completion LTL.
             t[B - 1 - i] = d[B - 1 - i];
         }
 
-        // The 'read' ends on the lass access of shared memory.
+        // The 'read' ends on the last access of shared memory.
         // In this case, the last access is to p2.
         // Simulatenously, we save the value of q2 and D for later verfication.
         // We also check whether the value of 'ghost_overflow_after' has changed since we set it.
@@ -180,19 +188,21 @@ red:    skip; // At this point v is the read-in value
 }
 
 // Eventual completion checks. (Liveness property)
+// WARNING: Needs to be adjusted when R changes
 #define reads_complete_a ( always (Reader[0]@en -> eventually Reader[0]@red) )
 #define reads_complete_b ( always (Reader[1]@en -> eventually Reader[1]@red) )
 ltl reads_complete { reads_complete_a && reads_complete_b }
 
 
 // Macro to check if one counter is less than or equal to another.
+// WARNING: Needs to be adjusted when B changes 
 #define LEQ(x,y,p) (x[B*p+0]<y[B*p+0] || (x[B*p+0]==y[B*p+0] && x[B*p+1]<=y[B*p+1]))
 #define ZERO(p) (ghost_V[B*p+0] == 0 && ghost_V[B*p+1] == 0)
 
 // Functional correctness checks. (Safety properties)
 //  Overflow: Once we are done with a 'read', make sure we can reliably use q1 and q2 to infer overflow.
 //  Func_correct: Once we are done with a 'read', make sure we have C <= V <= D. (explained in proof).
-
+// WARNING: Needs to be adjusted when R changes
 ltl overflow_a { always ((Reader[1]@red && ghost_q1[0] != ghost_q2[0]) -> ghost_overflow_after[0]) }
 ltl func_correct_a { always (Reader[1]@red -> ((ghost_overflow_after[0] -> ZERO(0)) || (LEQ(ghost_C,ghost_V,0) && LEQ(ghost_V,ghost_D,0))))}
 
