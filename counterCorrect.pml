@@ -204,7 +204,7 @@ ltl reads_complete { reads_complete_a && reads_complete_b }
 //  Func_correct: Once we are done with a 'read', make sure we have C <= V <= D. (explained in proof).
 // WARNING: Needs to be adjusted when R changes
 ltl overflow_a { always ((Reader[1]@red && ghost_q1[0] != ghost_q2[0]) -> ghost_overflow_after[0]) }
-ltl func_correct_a { always (Reader[1]@red -> ((ghost_overflow_after[0] -> ZERO(0)) || (LEQ(ghost_C,ghost_V,0) && LEQ(ghost_V,ghost_D,0))))}
+ltl func_correct_a { always (Reader[1]@red -> (!ghost_overflow_after[0] -> (LEQ(ghost_C,ghost_V,0) && LEQ(ghost_V,ghost_D,0))))}
 
 ltl overflow_b { always ((Reader[2]@red && ghost_q1[1] != ghost_q2[1]) -> ghost_overflow_after[1]) }
-ltl func_correct_b { always (Reader[2]@red -> ((ghost_overflow_after[1] -> ZERO(1)) || (LEQ(ghost_C,ghost_V,1) && LEQ(ghost_V,ghost_D,1))))}
+ltl func_correct_b { always (Reader[2]@red -> (!ghost_overflow_after[1] -> (LEQ(ghost_C,ghost_V,1) && LEQ(ghost_V,ghost_D,1))))}
