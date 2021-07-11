@@ -56,6 +56,7 @@ active proctype Writer() {
                     }
                 ::  else -> skip;
                 fi
+                e[i] = 0;
             ::  else ->
                 e[i]++; // Add 1 to current digit
                 break;  // Because this doesn't overflow, we are done adding.
@@ -63,6 +64,8 @@ active proctype Writer() {
             i--;
         ::  else -> break;
         od
+
+        printf("Writer: %d, %d\n", e[0],e[1]);
         
         // In our implementation, we declare the start of a write to happen at the start of an access to shared memory.
         // In this case, we access p2 first.
@@ -93,7 +96,6 @@ active proctype Writer() {
 }
 
 active[R] proctype Reader() {
-en: skip;
     byte s[B];  // Private buffer to read from c.
     byte t[B];  // Private buffer to read from d.
     byte v[B];  // Private buffer to store the 'read' result (not necessarily equal to c or d).
@@ -104,6 +106,7 @@ en: skip;
     int i;
     do 
     ::  
+en:     skip;   // Label for eventual entry.
         // Reset the result to all 0's.
         for (i : 0..(B-1)) {
             v[i] = 0;
@@ -184,13 +187,14 @@ ltl reads_complete { reads_complete_a && reads_complete_b }
 
 // Macro to check if one counter is less than or equal to another.
 #define LEQ(x,y,p) (x[B*p+0]<y[B*p+0] || (x[B*p+0]==y[B*p+0] && x[B*p+1]<=y[B*p+1]))
+#define ZERO(p) (ghost_V[B*p+0] == 0 && ghost_V[B*p+1] == 0)
 
 // Functional correctness checks. (Safety properties)
 //  Overflow: Once we are done with a 'read', make sure we can reliably use q1 and q2 to infer overflow.
 //  Func_correct: Once we are done with a 'read', make sure we have C <= V <= D. (explained in proof).
 
 ltl overflow_a { always ((Reader[1]@red && ghost_q1[0] != ghost_q2[0]) -> ghost_overflow_after[0]) }
-ltl func_correct_a { always (Reader[1]@red -> (ghost_overflow_after[0] || (LEQ(ghost_C,ghost_V,0) && LEQ(ghost_V,ghost_D,0))))}
+ltl func_correct_a { always (Reader[1]@red -> ((ghost_overflow_after[0] -> ZERO(0)) || (LEQ(ghost_C,ghost_V,0) && LEQ(ghost_V,ghost_D,0))))}
 
 ltl overflow_b { always ((Reader[2]@red && ghost_q1[1] != ghost_q2[1]) -> ghost_overflow_after[1]) }
-ltl func_correct_b { always (Reader[2]@red -> (ghost_overflow_after[1] || (LEQ(ghost_C,ghost_V,1) && LEQ(ghost_V,ghost_D,1))))}
+ltl func_correct_b { always (Reader[2]@red -> ((ghost_overflow_after[1] -> ZERO(1)) || (LEQ(ghost_C,ghost_V,1) && LEQ(ghost_V,ghost_D,1))))}
