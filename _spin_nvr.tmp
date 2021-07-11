@@ -1,0 +1,52 @@
+never reads_complete {    /* !(([] ((! ((Reader[0]@en))) || (<> ((Reader[0]@red))))) && ([] ((! ((Reader[1]@en))) || (<> ((Reader[1]@red)))))) */
+T0_init:
+	do
+	:: (! ((! ((Reader[1]@en)))) && ! (((Reader[1]@red)))) -> goto accept_S5
+	:: (! ((! ((Reader[0]@en)))) && ! (((Reader[0]@red)))) -> goto accept_S10
+	:: (1) -> goto T0_init
+	od;
+accept_S5:
+	do
+	:: (! (((Reader[1]@red)))) -> goto accept_S5
+	od;
+accept_S10:
+	do
+	:: (! (((Reader[0]@red)))) -> goto accept_S10
+	od;
+}
+never overflow_a {    /* !([] ((! (((Reader[1]@red)) && ((ghost_q1[0]!=ghost_q2[0])))) || (ghost_overflow_after[0]))) */
+T0_init:
+	do
+	:: atomic { (! (((! (((Reader[1]@red)) && ((ghost_q1[0]!=ghost_q2[0])))) || (ghost_overflow_after[0])))) -> assert(!(! (((! (((Reader[1]@red)) && ((ghost_q1[0]!=ghost_q2[0])))) || (ghost_overflow_after[0]))))) }
+	:: (1) -> goto T0_init
+	od;
+accept_all:
+	skip
+}
+never func_correct_a {    /* !([] ((! ((Reader[1]@red))) || (((! (ghost_overflow_after[0])) || (((ghost_V[((2*0)+0)]==0)) && ((ghost_V[((2*0)+1)]==0)))) || ((((ghost_C[((2*0)+0)]<ghost_V[((2*0)+0)])) || (((ghost_C[((2*0)+0)]==ghost_V[((2*0)+0)])) && ((ghost_C[((2*0)+1)]<=ghost_V[((2*0)+1)])))) && (((ghost_V[((2*0)+0)]<ghost_D[((2*0)+0)])) || (((ghost_V[((2*0)+0)]==ghost_D[((2*0)+0)])) && ((ghost_V[((2*0)+1)]<=ghost_D[((2*0)+1)])))))))) */
+T0_init:
+	do
+	:: atomic { (! (((! ((Reader[1]@red))) || (((! (ghost_overflow_after[0])) || (((ghost_V[((2*0)+0)]==0)) && ((ghost_V[((2*0)+1)]==0)))) || ((((ghost_C[((2*0)+0)]<ghost_V[((2*0)+0)])) || (((ghost_C[((2*0)+0)]==ghost_V[((2*0)+0)])) && ((ghost_C[((2*0)+1)]<=ghost_V[((2*0)+1)])))) && (((ghost_V[((2*0)+0)]<ghost_D[((2*0)+0)])) || (((ghost_V[((2*0)+0)]==ghost_D[((2*0)+0)])) && ((ghost_V[((2*0)+1)]<=ghost_D[((2*0)+1)]))))))))) -> assert(!(! (((! ((Reader[1]@red))) || (((! (ghost_overflow_after[0])) || (((ghost_V[((2*0)+0)]==0)) && ((ghost_V[((2*0)+1)]==0)))) || ((((ghost_C[((2*0)+0)]<ghost_V[((2*0)+0)])) || (((ghost_C[((2*0)+0)]==ghost_V[((2*0)+0)])) && ((ghost_C[((2*0)+1)]<=ghost_V[((2*0)+1)])))) && (((ghost_V[((2*0)+0)]<ghost_D[((2*0)+0)])) || (((ghost_V[((2*0)+0)]==ghost_D[((2*0)+0)])) && ((ghost_V[((2*0)+1)]<=ghost_D[((2*0)+1)])))))))))) }
+	:: (1) -> goto T0_init
+	od;
+accept_all:
+	skip
+}
+never overflow_b {    /* !([] ((! (((Reader[2]@red)) && ((ghost_q1[1]!=ghost_q2[1])))) || (ghost_overflow_after[1]))) */
+T0_init:
+	do
+	:: atomic { (! (((! (((Reader[2]@red)) && ((ghost_q1[1]!=ghost_q2[1])))) || (ghost_overflow_after[1])))) -> assert(!(! (((! (((Reader[2]@red)) && ((ghost_q1[1]!=ghost_q2[1])))) || (ghost_overflow_after[1]))))) }
+	:: (1) -> goto T0_init
+	od;
+accept_all:
+	skip
+}
+never func_correct_b {    /* !([] ((! ((Reader[2]@red))) || (((! (ghost_overflow_after[1])) || (((ghost_V[((2*1)+0)]==0)) && ((ghost_V[((2*1)+1)]==0)))) || ((((ghost_C[((2*1)+0)]<ghost_V[((2*1)+0)])) || (((ghost_C[((2*1)+0)]==ghost_V[((2*1)+0)])) && ((ghost_C[((2*1)+1)]<=ghost_V[((2*1)+1)])))) && (((ghost_V[((2*1)+0)]<ghost_D[((2*1)+0)])) || (((ghost_V[((2*1)+0)]==ghost_D[((2*1)+0)])) && ((ghost_V[((2*1)+1)]<=ghost_D[((2*1)+1)])))))))) */
+T0_init:
+	do
+	:: atomic { (! (((! ((Reader[2]@red))) || (((! (ghost_overflow_after[1])) || (((ghost_V[((2*1)+0)]==0)) && ((ghost_V[((2*1)+1)]==0)))) || ((((ghost_C[((2*1)+0)]<ghost_V[((2*1)+0)])) || (((ghost_C[((2*1)+0)]==ghost_V[((2*1)+0)])) && ((ghost_C[((2*1)+1)]<=ghost_V[((2*1)+1)])))) && (((ghost_V[((2*1)+0)]<ghost_D[((2*1)+0)])) || (((ghost_V[((2*1)+0)]==ghost_D[((2*1)+0)])) && ((ghost_V[((2*1)+1)]<=ghost_D[((2*1)+1)]))))))))) -> assert(!(! (((! ((Reader[2]@red))) || (((! (ghost_overflow_after[1])) || (((ghost_V[((2*1)+0)]==0)) && ((ghost_V[((2*1)+1)]==0)))) || ((((ghost_C[((2*1)+0)]<ghost_V[((2*1)+0)])) || (((ghost_C[((2*1)+0)]==ghost_V[((2*1)+0)])) && ((ghost_C[((2*1)+1)]<=ghost_V[((2*1)+1)])))) && (((ghost_V[((2*1)+0)]<ghost_D[((2*1)+0)])) || (((ghost_V[((2*1)+0)]==ghost_D[((2*1)+0)])) && ((ghost_V[((2*1)+1)]<=ghost_D[((2*1)+1)])))))))))) }
+	:: (1) -> goto T0_init
+	od;
+accept_all:
+	skip
+}
