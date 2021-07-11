@@ -197,8 +197,6 @@ ltl reads_complete { reads_complete_a && reads_complete_b }
 // Macro to check if one counter is less than or equal to another.
 // WARNING: Needs to be adjusted when B changes 
 #define LEQ(x,y,p) (x[B*p+0]<y[B*p+0] || (x[B*p+0]==y[B*p+0] && x[B*p+1]<=y[B*p+1]))
-#define ZERO(p) (ghost_V[B*p+0] == 0 && ghost_V[B*p+1] == 0)
-
 // Functional correctness checks. (Safety properties)
 //  Overflow: Once we are done with a 'read', make sure we can reliably use q1 and q2 to infer overflow.
 //  Func_correct: Once we are done with a 'read', make sure we have C <= V <= D. (explained in proof).
