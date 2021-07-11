@@ -52,6 +52,7 @@ public class Counter {
             readers[i] = new Counter().new Reader(i);
         }
 
+        // Start Writer and Readers
         w.start();
         for (i = 0; i < R; i++) {
             readers[i].start();
@@ -64,13 +65,14 @@ public class Counter {
             byte[] e = new byte[B];
             int i = 0;
             int q = 0;
+
             for (int round = 0; k == 0 || round < k; round++) {
                 q = p1;
                 for (i = 0; i < B; i++) {
                     e[i] = c[i];
                 }
                 i = B - 1;
-                while (true) {
+                while (true) {      // Faithful Promela implementation
                     if (i >= 0) {
                         if (e[i] == BYTE_MAX) {
                             if (i == 0) {
@@ -86,18 +88,18 @@ public class Counter {
                         break;
                     }
                 }
-                p2 = q;
                 System.out.println("Writing: " + Arrays.toString(e));
-                // write into d left to right
+                p2 = q;
+                // Write into d left to right
                 for (i = 0; i < B; i++) {
                     d[i] = e[i];
                 }
-                // write into c right to left
+                // Write into c right to left
                 for (i = 0; i < B; i++) {
                     c[B-1-i] = e[B-1-i];
                 }
                 p1 = q;
-                // we have now completed a `write'
+                // We have now completed a `write'
                 System.out.println("Wrote: " + Arrays.toString(e));
             }
         }
@@ -119,28 +121,31 @@ public class Counter {
             int q1;
             int q2;
             int i;
+
             for (int round = 0; k == 0 || round < k; round++) {
                 for (i = 0; i < B; i++) {
                     v[i] = 0;
                 }
 
                 System.out.println("Reading (" + pid + ")");
-
-                // reading shared memory
+                // Start reading shared memory
                 q1 = p1;
+                // Read into s from left to right
                 for (i = 0; i < B; i++) {
                     s[i] = c[i];
                 }
+                // Read into t from right to left
                 for (i = 0; i < B; i++) {
                     t[B-1-i] = d[B-1-i];
                 }
                 q2 = p2;
+                // End reading shared memory
 
                 if (q1 != q2) {
-                    // do nothing
+                    // Do nothing
                 } else {
                     i = 0;
-                    while(true) {
+                    while (true) {
                         if (i < B && s[i]==t[i]) {
                             v[i] = t[i];
                             i++;

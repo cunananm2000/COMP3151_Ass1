@@ -1,5 +1,9 @@
-// attempted to verify no deadlock - max depth reached
-// attempted to verify eventaul completion of reads - max depth reached
+// counter.pml
+// Authors: Michael Cunanan (z5204816), Kenvin Yu (z5207857)
+
+// Results:
+//  Attempted to verify no deadlock: max depth reached
+//  Attempted to verify eventaul completion of reads: max depth reached
 
 // Terminology:
 //  Carry-over: When adding 1 to the current digit causes this digit to be set to 0, and to incrememnt the next byte.
@@ -7,10 +11,11 @@
 
 #define B 2
 #define R 2
-#define MAX 5
+#define MAX 5 // Normally the MAX value for a byte is 255, but we artificially lower it for verficiation 
 
 //  Two copies of our counter. At the end of every 'write', these will be equal.
 //  Counters have the most signficant byte on the left (and least significant on the right)
+//  (Left means lowest index)
 byte c[B];
 byte d[B];
 
@@ -20,7 +25,7 @@ bit p2 = 0;
 
 //  Ghost variables which are only used for verification purposes.
 //  If we remove all code involving ghost variables, we end up with a normal solution.
-//  Most are arrays at they are meant to reflect what each reader sees.
+//  Most are arrays and they are meant to reflect what each reader sees.
 byte    ghost_C[B*R];
 byte    ghost_D[B*R];
 byte    ghost_V[B*R];
@@ -93,7 +98,6 @@ active proctype Writer() {
 }
 
 active[R] proctype Reader() {
-en: skip;
     byte s[B];  // Private buffer to read from c.
     byte t[B];  // Private buffer to read from d.
     byte v[B];  // Private buffer to store the 'read' result (not necessarily equal to c or d).
@@ -104,6 +108,7 @@ en: skip;
     int i;
     do 
     ::  
+en:     skip;   // For labelling purposes
         // Reset the result to all 0's.
         for (i : 0..(B-1)) {
             v[i] = 0;
@@ -134,7 +139,7 @@ en: skip;
             t[B - 1 - i] = d[B - 1 - i];
         }
 
-        // The 'read' ends on the lass access of shared memory.
+        // The 'read' ends on the last access of shared memory.
         // In this case, the last access is to p2.
         // Simulatenously, we save the value of q2 and D for later verfication.
         // We also check whether the value of 'ghost_overflow_after' has changed since we set it.
@@ -177,18 +182,20 @@ red:    skip; // At this point v is the read-in value
 }
 
 // Eventual completion checks. (Liveness property)
+// WARNING: Needs to be adjusted when R changes
 #define reads_complete_a ( always (Reader[0]@en -> eventually Reader[0]@red) )
 #define reads_complete_b ( always (Reader[1]@en -> eventually Reader[1]@red) )
 ltl reads_complete { reads_complete_a && reads_complete_b }
 
 
 // Macro to check if one counter is less than or equal to another.
+// WARNING: Needs to be adjusted when B changes 
 #define LEQ(x,y,p) (x[B*p+0]<y[B*p+0] || (x[B*p+0]==y[B*p+0] && x[B*p+1]<=y[B*p+1]))
 
 // Functional correctness checks. (Safety properties)
 //  Overflow: Once we are done with a 'read', make sure we can reliably use q1 and q2 to infer overflow.
 //  Func_correct: Once we are done with a 'read', make sure we have C <= V <= D. (explained in proof).
-
+// WARNING: Needs to be adjusted when R changes
 ltl overflow_a { always ((Reader[1]@red && ghost_q1[0] != ghost_q2[0]) -> ghost_overflow_after[0]) }
 ltl func_correct_a { always (Reader[1]@red -> (ghost_overflow_after[0] || (LEQ(ghost_C,ghost_V,0) && LEQ(ghost_V,ghost_D,0))))}
 
