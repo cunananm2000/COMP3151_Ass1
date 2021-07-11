@@ -1,3 +1,6 @@
+// Counter.java
+// Authors: Michael Cunanan (z5204816), Kenvin Yu (z5207857)
+
 import java.util.Arrays;
 
 public class Counter {
