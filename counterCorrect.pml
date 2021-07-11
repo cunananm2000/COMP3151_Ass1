@@ -109,9 +109,11 @@ active[R] proctype Reader() {
     bit q2;     // Private variable to read in parity bit p2.
 
     int i;
+    
     do 
-    ::  
+    ::  skip;   
 en:     skip;   // Label for eventual entry.
+
         // Reset the result to all 0's.
         for (i : 0..(B-1)) {
             v[i] = 0;
