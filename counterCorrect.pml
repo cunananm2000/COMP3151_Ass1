@@ -40,6 +40,7 @@ active proctype Writer() {
     byte e[B];  // Private temporary buffer to write/read from.
     int i;      // Counter variable.
     byte q;     // Private temporary byte to read in parity bits.
+    
     do
     ::
         ghost_will_signal = false;  // Indicate whether or not to signal overflow for later.
@@ -109,7 +110,7 @@ active[R] proctype Reader() {
     bit q2;     // Private variable to read in parity bit p2.
 
     int i;
-    
+
     do 
     ::  skip;   
 en:     skip;   // Label for eventual entry.
