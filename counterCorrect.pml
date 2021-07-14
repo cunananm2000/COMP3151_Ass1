@@ -70,8 +70,6 @@ active proctype Writer() {
             i--;
         ::  else -> break;
         od;
-
-        // printf("Writer: %d, %d\n", e[0],e[1]);
         
         // In our implementation, we declare the start of a write to happen at the start of an access to shared memory.
         // In this case, we access p2 first.
@@ -153,7 +151,6 @@ en:     skip;   // Label for eventual entry.
             q2 = p2;
             ghost_q2[_pid-1] = q2;
             ghost_overflow_after[_pid-1] = ghost_overflow[_pid-1] || ghost_overflow_after[_pid-1];
-            // printf("\n\n\n ---------- \n Reading in overflow. %d %d  %d\n ----------- \n\n\n",q1,q2,ghost_overflow_after[_pid-1]);
             for (i : 0..(B-1)) {
                 ghost_D[B*(_pid-1)+i] = d[i];
             }
@@ -181,7 +178,6 @@ en:     skip;   // Label for eventual entry.
             for (i: 0..(B-1)) {
                 ghost_V[B*(_pid-1)+i] = v[i];
             }
-            // printf("\n\n\n=========\n Reader: %d. CVD: %d,%d %d,%d %d,%d. Overflowed? %d. Parity bits %d %d\n=========\n\n\n",_pid,ghost_C[B*(_pid-1)+0],ghost_C[B*(_pid-1)+1],ghost_V[B*(_pid-1)+0],ghost_V[B*(_pid-1)+1],ghost_D[B*(_pid-1)+0],ghost_D[B*(_pid-1)+1],ghost_overflow_after[_pid-1],q1,q2);
         }
 red:    skip; // At this point v is the read-in value 
     od;
