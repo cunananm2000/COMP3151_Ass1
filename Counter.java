@@ -29,8 +29,8 @@ public class Counter {
                 B = Integer.parseInt(args[1]);
                 k = Integer.parseInt(args[2]);
 
-                if (R <= 0) throw new NumberFormatException("R is negative");
-                if (B <= 0) throw new NumberFormatException("B is negative");
+                if (R <= 0) throw new NumberFormatException("R is non-positive");
+                if (B <= 0) throw new NumberFormatException("B is non-positive");
                 if (k < 0) throw new NumberFormatException("k is negative");
                 
             } catch (NumberFormatException e) {
@@ -42,7 +42,7 @@ public class Counter {
             System.exit(1);
         }
 
-        // Initialise buffers and parity
+        // Initialise shared buffers and parity "bits"
         c = new byte[B];
         d = new byte[B];
         p1 = 0;
